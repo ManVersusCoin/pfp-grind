@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
+import Card from "@/components/ui/Card";  // Importation par défaut
+import { CardContent } from "@/components/ui/Card";  // Importation nommée
+
 
 
 import { motion } from "framer-motion";
