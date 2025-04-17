@@ -1,14 +1,30 @@
-export async function GET(req) {
-    const url = new URL(req.url)
-    const address = url.searchParams.get('address')
-    const chain = url.searchParams.get('chain') || 'eth-mainnet'
+export const config = {
+    runtime: 'edge', // ou "nodejs" si tu préfères Serverless classique
+  };
   
-    const res = await fetch(
-      `https://eth-mainnet.g.alchemy.com/v2/${process.env.VITE_ALCHEMY_API_KEY}/getNFTs/?owner=${address}`,
-      { headers: { accept: 'application/json' } }
-    )
+  export default async function handler(req: Request) {
+    const { searchParams } = new URL(req.url);
+    const address = searchParams.get('address');
+    const chain = searchParams.get('chain') || 'eth-mainnet';
   
-    const data = await res.json()
-    return new Response(JSON.stringify(data), { status: 200 })
+    const apiKey = process.env.VITE_ALCHEMY_API_KEY;
+  
+    if (!apiKey || !address) {
+      return new Response(
+        JSON.stringify({ error: 'Missing API key or address' }),
+        { status: 400 }
+      );
+    }
+  
+    const baseURL = `https://${chain}.g.alchemy.com/v2/${apiKey}`;
+    const endpoint = `${baseURL}/getNFTs?owner=${address}`;
+  
+    const alchemyRes = await fetch(endpoint);
+    const data = await alchemyRes.json();
+  
+    return new Response(JSON.stringify(data), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
   
