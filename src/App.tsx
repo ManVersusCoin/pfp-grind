@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+
+
 import { motion } from "framer-motion";
 import { NFTGallery } from "./components/NFTGallery";
 import { OverlayEditor } from "./components/OverlayEditor";
