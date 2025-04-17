@@ -7,15 +7,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: "Missing address or chain" });
   }
 
+  const apiKey = process.env.ALCHEMY_API_KEY;
+  if (!apiKey) {
+    return res.status(500).json({ error: "Missing Alchemy API key" });
+  }
+
+  const endpoint = `https://${chain}.g.alchemy.com/nft/v2/${apiKey}/getNFTs?owner=${address}`;
+
   try {
-    const apiKey = process.env.ALCHEMY_API_KEY;
-    const endpoint = `https://${chain}.g.alchemy.com/nft/v2/${apiKey}/getNFTs?owner=${address}`;
-
     const response = await fetch(endpoint);
-    const data = await response.json();
+    if (!response.ok) {
+      const errorText = await response.text();
+      return res.status(500).json({ error: `Alchemy error: ${response.status} - ${errorText}` });
+    }
 
+    const data = await response.json();
     return res.status(200).json(data);
-  } catch (error) {
-    return res.status(500).json({ error: "Internal Server Error" });
+  } catch (err: any) {
+    console.error("Handler error:", err);
+    return res.status(500).json({ error: "Internal Server Error", details: err.message });
   }
 }
